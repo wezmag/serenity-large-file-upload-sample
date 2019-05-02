@@ -3445,51 +3445,6 @@ var SereneLargeFileUpload;
     var BasicSamples;
     (function (BasicSamples) {
         /**
-         * Styling for columns is done with CSS in site.basicsamples.less file.
-         * When comparing this to MultiColumnDialog sample, you may notice that
-         * this version requires much less JS and CSS code.
-         */
-        var MultiColumnResponsiveDialog = /** @class */ (function (_super) {
-            __extends(MultiColumnResponsiveDialog, _super);
-            function MultiColumnResponsiveDialog() {
-                return _super.call(this) || this;
-            }
-            MultiColumnResponsiveDialog = __decorate([
-                Serenity.Decorators.registerClass()
-            ], MultiColumnResponsiveDialog);
-            return MultiColumnResponsiveDialog;
-        }(SereneLargeFileUpload.Northwind.OrderDialog));
-        BasicSamples.MultiColumnResponsiveDialog = MultiColumnResponsiveDialog;
-    })(BasicSamples = SereneLargeFileUpload.BasicSamples || (SereneLargeFileUpload.BasicSamples = {}));
-})(SereneLargeFileUpload || (SereneLargeFileUpload = {}));
-/// <reference path="../../../Northwind/Order/OrderGrid.ts" />
-var SereneLargeFileUpload;
-(function (SereneLargeFileUpload) {
-    var BasicSamples;
-    (function (BasicSamples) {
-        /**
-         * Subclass of OrderGrid to override dialog type to MultiColumnResponsiveDialog
-         */
-        var MultiColumnResponsiveGrid = /** @class */ (function (_super) {
-            __extends(MultiColumnResponsiveGrid, _super);
-            function MultiColumnResponsiveGrid(container) {
-                return _super.call(this, container) || this;
-            }
-            MultiColumnResponsiveGrid.prototype.getDialogType = function () { return BasicSamples.MultiColumnResponsiveDialog; };
-            MultiColumnResponsiveGrid = __decorate([
-                Serenity.Decorators.registerClass()
-            ], MultiColumnResponsiveGrid);
-            return MultiColumnResponsiveGrid;
-        }(SereneLargeFileUpload.Northwind.OrderGrid));
-        BasicSamples.MultiColumnResponsiveGrid = MultiColumnResponsiveGrid;
-    })(BasicSamples = SereneLargeFileUpload.BasicSamples || (SereneLargeFileUpload.BasicSamples = {}));
-})(SereneLargeFileUpload || (SereneLargeFileUpload = {}));
-/// <reference path="../../../Northwind/Order/OrderDialog.ts" />
-var SereneLargeFileUpload;
-(function (SereneLargeFileUpload) {
-    var BasicSamples;
-    (function (BasicSamples) {
-        /**
          * Our custom order dialog subclass that will have a tab to display and edit selected customer details.
          */
         var OtherFormInTabDialog = /** @class */ (function (_super) {
@@ -4013,55 +3968,6 @@ var SereneLargeFileUpload;
             return ReadOnlyGrid;
         }(SereneLargeFileUpload.Northwind.SupplierGrid));
         BasicSamples.ReadOnlyGrid = ReadOnlyGrid;
-    })(BasicSamples = SereneLargeFileUpload.BasicSamples || (SereneLargeFileUpload.BasicSamples = {}));
-})(SereneLargeFileUpload || (SereneLargeFileUpload = {}));
-var SereneLargeFileUpload;
-(function (SereneLargeFileUpload) {
-    var BasicSamples;
-    (function (BasicSamples) {
-        /**
-         * Adding Responsive attribute makes this dialog use full screen in mobile devices.
-         */
-        var ResponsiveDialog = /** @class */ (function (_super) {
-            __extends(ResponsiveDialog, _super);
-            function ResponsiveDialog() {
-                return _super.call(this) || this;
-            }
-            ResponsiveDialog.prototype.getFormKey = function () { return SereneLargeFileUpload.Northwind.OrderForm.formKey; };
-            ResponsiveDialog.prototype.getIdProperty = function () { return SereneLargeFileUpload.Northwind.OrderRow.idProperty; };
-            ResponsiveDialog.prototype.getLocalTextPrefix = function () { return SereneLargeFileUpload.Northwind.OrderRow.localTextPrefix; };
-            ResponsiveDialog.prototype.getNameProperty = function () { return SereneLargeFileUpload.Northwind.OrderRow.nameProperty; };
-            ResponsiveDialog.prototype.getService = function () { return SereneLargeFileUpload.Northwind.OrderService.baseUrl; };
-            ResponsiveDialog = __decorate([
-                Serenity.Decorators.registerClass(),
-                Serenity.Decorators.responsive(),
-                Serenity.Decorators.maximizable()
-            ], ResponsiveDialog);
-            return ResponsiveDialog;
-        }(Serenity.EntityDialog));
-        BasicSamples.ResponsiveDialog = ResponsiveDialog;
-    })(BasicSamples = SereneLargeFileUpload.BasicSamples || (SereneLargeFileUpload.BasicSamples = {}));
-})(SereneLargeFileUpload || (SereneLargeFileUpload = {}));
-/// <reference path="../../../Northwind/Order/OrderGrid.ts" />
-var SereneLargeFileUpload;
-(function (SereneLargeFileUpload) {
-    var BasicSamples;
-    (function (BasicSamples) {
-        /**
-         * Subclass of OrderGrid to override dialog type to ResponsiveDialog
-         */
-        var ResponsiveGrid = /** @class */ (function (_super) {
-            __extends(ResponsiveGrid, _super);
-            function ResponsiveGrid(container) {
-                return _super.call(this, container) || this;
-            }
-            ResponsiveGrid.prototype.getDialogType = function () { return BasicSamples.ResponsiveDialog; };
-            ResponsiveGrid = __decorate([
-                Serenity.Decorators.registerClass()
-            ], ResponsiveGrid);
-            return ResponsiveGrid;
-        }(SereneLargeFileUpload.Northwind.OrderGrid));
-        BasicSamples.ResponsiveGrid = ResponsiveGrid;
     })(BasicSamples = SereneLargeFileUpload.BasicSamples || (SereneLargeFileUpload.BasicSamples = {}));
 })(SereneLargeFileUpload || (SereneLargeFileUpload = {}));
 var SereneLargeFileUpload;
@@ -6666,6 +6572,195 @@ var SereneLargeFileUpload;
     }(Serenity.Widget));
     SereneLargeFileUpload.StaticTextBlock = StaticTextBlock;
 })(SereneLargeFileUpload || (SereneLargeFileUpload = {}));
+var SereneLargeFileUpload;
+(function (SereneLargeFileUpload) {
+    var Element = Serenity.Decorators.element;
+    var Option = Serenity.Decorators.option;
+    var LargeFileUploadEditor = /** @class */ (function (_super) {
+        __extends(LargeFileUploadEditor, _super);
+        function LargeFileUploadEditor(div, opt) {
+            var _this = _super.call(this, div, opt) || this;
+            _this.entities = [];
+            div.addClass('s-MultipleImageUploadEditor');
+            var self = _this;
+            _this.toolbar = new Serenity.Toolbar($('<div/>').appendTo(_this.element), {
+                buttons: _this.getToolButtons()
+            });
+            var progress = $('<div><div></div></div>')
+                .addClass('upload-progress').prependTo(_this.toolbar.element);
+            var addFileButton = _this.toolbar.findButton('add-file-button');
+            _this.uploadInput = Serenity.UploadHelper.addLargeFileUploadInput({
+                container: addFileButton,
+                zone: _this.element,
+                inputName: _this.uniqueName,
+                progress: progress,
+                fileDone: function (response, name, data) {
+                    var newEntity = { OriginalName: name, Filename: response.TemporaryFile };
+                    self.entities.push(newEntity);
+                    self.populate();
+                    self.updateInterface();
+                }
+            });
+            _this.fileSymbols = $('<ul/>').appendTo(_this.element);
+            _this.updateInterface();
+            return _this;
+        }
+        LargeFileUploadEditor.prototype.addFileButtonText = function () {
+            return Q.text('Controls.ImageUpload.AddFileButton');
+        };
+        LargeFileUploadEditor.prototype.getToolButtons = function () {
+            return [{
+                    title: this.addFileButtonText(),
+                    cssClass: 'add-file-button',
+                    onClick: function () {
+                    }
+                }];
+        };
+        LargeFileUploadEditor.prototype.populate = function () {
+            var _this = this;
+            Serenity.UploadHelper.populateFileSymbols(this.fileSymbols, this.entities, true, this.options.urlPrefix);
+            this.fileSymbols.children().each(function (i, e) {
+                var x = i;
+                $("<a class='delete'></a>").appendTo($(e).children('.filename'))
+                    .click(function (ev) {
+                    ev.preventDefault();
+                    ss.removeAt(_this.entities, x);
+                    _this.populate();
+                });
+            });
+        };
+        LargeFileUploadEditor.prototype.updateInterface = function () {
+            var addButton = this.toolbar.findButton('add-file-button');
+            addButton.toggleClass('disabled', this.get_readOnly());
+            this.fileSymbols.find('a.delete').toggle(!this.get_readOnly());
+            console.log(this.entities);
+        };
+        LargeFileUploadEditor.prototype.get_readOnly = function () {
+            return this.uploadInput.attr('disabled') != null;
+        };
+        LargeFileUploadEditor.prototype.set_readOnly = function (value) {
+            if (this.get_readOnly() !== value) {
+                if (value) {
+                    this.uploadInput.attr('disabled', 'disabled').fileupload('disable');
+                }
+                else {
+                    this.uploadInput.removeAttr('disabled').fileupload('enable');
+                }
+                this.updateInterface();
+            }
+        };
+        LargeFileUploadEditor.prototype.get_value = function () {
+            return this.entities.map(function (x) {
+                return $.extend({}, x);
+            });
+        };
+        Object.defineProperty(LargeFileUploadEditor.prototype, "value", {
+            get: function () {
+                return this.get_value();
+            },
+            set: function (v) {
+                this.set_value(v);
+            },
+            enumerable: true,
+            configurable: true
+        });
+        LargeFileUploadEditor.prototype.set_value = function (value) {
+            this.entities = (value || []).map(function (x) {
+                return $.extend({}, x);
+            });
+            this.populate();
+            this.updateInterface();
+        };
+        LargeFileUploadEditor.prototype.getEditValue = function (property, target) {
+            if (this.jsonEncodeValue) {
+                target[property.name] = $.toJSON(this.get_value());
+            }
+            else {
+                target[property.name] = this.get_value();
+            }
+        };
+        LargeFileUploadEditor.prototype.setEditValue = function (source, property) {
+            var val = source[property.name];
+            if (ss.isInstanceOfType(val, String)) {
+                var json = Q.coalesce(Q.trimToNull(val), '[]');
+                if (Q.startsWith(json, '[') && Q.endsWith(json, ']')) {
+                    this.set_value($.parseJSON(json));
+                }
+                else {
+                    this.set_value([{
+                            Filename: json,
+                            OriginalName: 'UnknownFile'
+                        }]);
+                }
+            }
+            else {
+                this.set_value(val);
+            }
+        };
+        __decorate([
+            Option()
+        ], LargeFileUploadEditor.prototype, "jsonEncodeValue", void 0);
+        LargeFileUploadEditor = __decorate([
+            Serenity.Decorators.registerEditor([Serenity.IReadOnly, Serenity.IGetEditValue, Serenity.ISetEditValue]),
+            Element('<div/>')
+        ], LargeFileUploadEditor);
+        return LargeFileUploadEditor;
+    }(Serenity.Widget));
+    SereneLargeFileUpload.LargeFileUploadEditor = LargeFileUploadEditor;
+})(SereneLargeFileUpload || (SereneLargeFileUpload = {}));
+var Serenity;
+(function (Serenity) {
+    var UploadHelper;
+    (function (UploadHelper) {
+        function addLargeFileUploadInput(options) {
+            options.container.addClass('fileinput-button');
+            var uploadInput = $('<input/>').attr('type', 'file')
+                .attr('name', options.inputName + '[]')
+                .attr('data-url', Q.resolveUrl('~/api/fileupload/'))
+                .attr('multiple', 'multiple')
+                .appendTo(options.container);
+            if (options.allowMultiple) {
+                uploadInput.attr('multiple', 'multiple');
+            }
+            uploadInput.fileupload({
+                multipart: true,
+                maxChunkSize: 4000000,
+                dropZone: options.zone,
+                pasteZone: options.zone,
+                done: function (e, data) {
+                    var response = data.result;
+                    if (options.fileDone != null) {
+                        options.fileDone(response, data.files[0].name, data);
+                    }
+                },
+                start: function () {
+                    Q.blockUI(null);
+                    if (options.progress != null) {
+                        options.progress.show();
+                    }
+                },
+                stop: function () {
+                    Q.blockUndo();
+                    if (options.progress != null) {
+                        options.progress.hide();
+                    }
+                },
+                progressall: function (e1, data1) {
+                    if (options.progress != null) {
+                        var percent = data1.loaded / data1.total * 100;
+                        options.progress.children().css('width', percent.toString() + '%');
+                    }
+                },
+                submit: function (e, data) {
+                    var file = data.files[0];
+                    data.headers = $.extend(data.headers, { 'X-File-Token': Q.Authorization.username, 'X-File-Name': file.name });
+                }
+            });
+            return uploadInput;
+        }
+        UploadHelper.addLargeFileUploadInput = addLargeFileUploadInput;
+    })(UploadHelper = Serenity.UploadHelper || (Serenity.UploadHelper = {}));
+})(Serenity || (Serenity = {}));
 var SereneLargeFileUpload;
 (function (SereneLargeFileUpload) {
     var Common;
