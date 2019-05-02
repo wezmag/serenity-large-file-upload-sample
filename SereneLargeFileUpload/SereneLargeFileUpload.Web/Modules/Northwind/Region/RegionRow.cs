@@ -28,6 +28,20 @@ namespace SereneLargeFileUpload.Northwind.Entities
             set { Fields.RegionDescription[this] = value; }
         }
 
+        [MultipleFileUploadEditor(FilenameFormat = "RegionUpload1/~")]
+        public String FileUpload1
+        {
+            get { return Fields.FileUpload1[this]; }
+            set { Fields.FileUpload1[this] = value; }
+        }
+
+        [LargeFileUploadEditor]
+        public String FileUpload2
+        {
+            get { return Fields.FileUpload2[this]; }
+            set { Fields.FileUpload2[this] = value; }
+        }
+
         IIdField IIdRow.IdField
         {
             get { return Fields.RegionID; }
@@ -49,6 +63,8 @@ namespace SereneLargeFileUpload.Northwind.Entities
         {
             public Int32Field RegionID;
             public StringField RegionDescription;
+            public StringField FileUpload1;
+            public StringField FileUpload2;
         }
     }
 }

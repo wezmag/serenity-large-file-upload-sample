@@ -2,6 +2,8 @@
     export interface RegionRow {
         RegionID?: number;
         RegionDescription?: string;
+        FileUpload1?: string;
+        FileUpload2?: string;
     }
 
     export namespace RegionRow {
@@ -16,7 +18,9 @@
 
         export declare const enum Fields {
             RegionID = "RegionID",
-            RegionDescription = "RegionDescription"
+            RegionDescription = "RegionDescription",
+            FileUpload1 = "FileUpload1",
+            FileUpload2 = "FileUpload2"
         }
     }
 }

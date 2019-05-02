@@ -1847,6 +1847,7 @@
     <Compile Include="Imports\ClientTypes\LargeFileUploadEditorAttribute.cs">
       <DependentUpon>ClientTypes.tt</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\NorthwindDB\NorthwindDB_20190502_162300_AddFileUploadColumnToRegion.cs" />
     <Compile Include="Modules\Administration\AdministrationNavigation.cs" />
     <Compile Include="Modules\Administration\Language\LanguageLookup.cs" />
     <Compile Include="Modules\Administration\RolePermission\RolePermissionUpdateRequest.cs" />

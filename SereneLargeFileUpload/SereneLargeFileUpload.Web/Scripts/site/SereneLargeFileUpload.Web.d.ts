@@ -1644,6 +1644,8 @@ declare namespace SereneLargeFileUpload.Northwind {
     interface RegionForm {
         RegionID: Serenity.IntegerEditor;
         RegionDescription: Serenity.StringEditor;
+        FileUpload1: Serenity.MultipleImageUploadEditor;
+        FileUpload2: LargeFileUploadEditor;
     }
     class RegionForm extends Serenity.PrefixedContext {
         static formKey: string;
@@ -1655,6 +1657,8 @@ declare namespace SereneLargeFileUpload.Northwind {
     interface RegionRow {
         RegionID?: number;
         RegionDescription?: string;
+        FileUpload1?: string;
+        FileUpload2?: string;
     }
     namespace RegionRow {
         const idProperty = "RegionID";
@@ -1664,7 +1668,9 @@ declare namespace SereneLargeFileUpload.Northwind {
         function getLookup(): Q.Lookup<RegionRow>;
         const enum Fields {
             RegionID = "RegionID",
-            RegionDescription = "RegionDescription"
+            RegionDescription = "RegionDescription",
+            FileUpload1 = "FileUpload1",
+            FileUpload2 = "FileUpload2"
         }
     }
 }

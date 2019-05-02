@@ -10,5 +10,7 @@ namespace SereneLargeFileUpload.Northwind.Forms
     {
         public Int32? RegionID { get; set; }
         public String RegionDescription { get; set; }
+        public String FileUpload1 { get; set; }
+        public String FileUpload2 { get; set; }
     }
 }
