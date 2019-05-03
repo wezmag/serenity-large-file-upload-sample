@@ -1,8 +1,10 @@
-# Implementing Large File Upload Editor for Serenity Application Platform
+# Implementing Large File Upload Editor for [Serenity Application Platform](https://github.com/volkanceylan/Serenity/) 
 
 1. Support gigabyte size file upload (Chunk upload)
 2. Seamless integration with Serenity Application Platform
 3. Use the similar setting as MultipleFileUploadEditor
+
+If you don't know what Serenity Application Platform is, please visit https://github.com/volkanceylan/Serenity/ or https://serenity.is/
 
 ## How-to
 1. Add Microsoft.AspNet.WebApi using Nuget Package Manager
