@@ -1903,6 +1903,8 @@
     <Compile Include="Modules\Common\LargeFileUpload\FileChunkMetaData.cs" />
     <Compile Include="Modules\Common\LargeFileUpload\HttpRequestMessageExtensions.cs" />
     <Compile Include="Modules\Common\LargeFileUpload\LargeFileController.cs" />
+    <Compile Include="Modules\Common\LargeFileUpload\LargeFileUploadBehavior.cs" />
+    <Compile Include="Modules\Common\LargeFileUpload\LargeFileUploadEditorAttribute.cs" />
     <Compile Include="Modules\Common\LargeFileUpload\UploadFileService.cs" />
     <Compile Include="Modules\Common\LargeFileUpload\UploadProcessingResult.cs" />
     <Compile Include="Modules\Common\LargeFileUpload\ValidateMimeMultipartContentFilterAttribute.cs" />

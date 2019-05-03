@@ -36,18 +36,18 @@ namespace SereneLargeFileUpload.Common.LargeFileUpload
 
         private async Task<UploadProcessingResult> ProcessFile(HttpRequestMessage request)
         {
+            var uploadPath = Path.Combine(_uploadSettings.Path, TempFolder);
+            if (!Directory.Exists(uploadPath))
+                Directory.CreateDirectory(uploadPath);
+
             if (request.IsChunkUpload())
             {
-                return await ProcessChunk(request);
+                return await ProcessChunk(request, uploadPath);
             }
 
-            //將檔案搬到對應的資料夾
             var xtoken = request.Headers.Contains("X-File-Token") ? request.Headers.GetValues("X-File-Token").FirstOrDefault() : null;
             var savedFileName = GetSafeFileName($"{xtoken}_{OriginalFileName}");
 
-            var uploadPath = Path.Combine(_uploadSettings.Path, "temporary");
-            if (!Directory.Exists(uploadPath))
-                Directory.CreateDirectory(uploadPath);
             string savedFilePath = Path.Combine(uploadPath, savedFileName);
 
             if (File.Exists(savedFilePath))
@@ -64,15 +64,10 @@ namespace SereneLargeFileUpload.Common.LargeFileUpload
             };
         }
 
-        private async Task<UploadProcessingResult> ProcessChunk(HttpRequestMessage request)
+        private async Task<UploadProcessingResult> ProcessChunk(HttpRequestMessage request, string uploadPath)
         {
-            //use the unique identifier sent from client to identify the file
             FileChunkMetaData chunkMetaData = request.GetChunkMetaData();
             var savedFileName = GetSafeFileName($"{chunkMetaData.ChunkToken}_{OriginalFileName}");
-
-            string uploadPath = Path.Combine(_uploadSettings.Path, TempFolder);
-            if (!Directory.Exists(uploadPath))
-                Directory.CreateDirectory(uploadPath);
 
             string savedFilePath = Path.Combine(uploadPath, savedFileName);
 
@@ -88,7 +83,6 @@ namespace SereneLargeFileUpload.Common.LargeFileUpload
                 fileStream.Close();
                 localFileStream.Close();
 
-                //delete chunk
                 localFileInfo.Delete();
             }
 
@@ -121,14 +115,6 @@ namespace SereneLargeFileUpload.Common.LargeFileUpload
             {
                 MultipartFileData fileData = _streamProvider.FileData.FirstOrDefault();
                 return fileData.Headers.ContentDisposition.FileName.Replace("\"", string.Empty);
-            }
-        }
-
-        public static string TempFileExtension
-        {
-            get
-            {
-                return ".orig";
             }
         }
 

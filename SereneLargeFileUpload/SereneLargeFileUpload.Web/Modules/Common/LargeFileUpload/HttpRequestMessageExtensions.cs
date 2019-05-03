@@ -15,7 +15,6 @@ namespace SereneLargeFileUpload.Common.LargeFileUpload
             return new FileChunkMetaData()
             {
                 ChunkToken = request.Headers.Contains("X-File-Token") ? request.Headers.GetValues("X-File-Token").FirstOrDefault() : null,
-                //ChuckFileName = request.Headers.Contains("X-File-Name") ? request.Headers.GetValues("X-File-Name").FirstOrDefault() : null,
                 ChunkStart = request.Content.Headers.ContentRange.From,
                 ChunkEnd = request.Content.Headers.ContentRange.To,
                 TotalLength = request.Content.Headers.ContentRange.Length

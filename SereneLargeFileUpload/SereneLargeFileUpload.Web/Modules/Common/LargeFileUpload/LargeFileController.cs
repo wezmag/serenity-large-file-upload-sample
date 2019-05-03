@@ -25,19 +25,21 @@ namespace SereneLargeFileUpload.Common.LargeFileUpload
 
             if (uploadResult.IsComplete)
             {
-                // do other stuff here after file upload complete
-                if (Path.GetExtension(uploadResult.LocalFilePath).Equals(UploadFileService.TempFileExtension, StringComparison.InvariantCultureIgnoreCase))
-                {
-                    string destFileName = uploadResult.LocalFilePath.Substring(0, uploadResult.LocalFilePath.Length - UploadFileService.TempFileExtension.Length);
+                var uniqueId = Guid.NewGuid().ToString("N");
+                var saveFileName = $"{uniqueId}{Path.GetExtension(uploadResult.FileName)}";
+                var saveFilePath = Path.Combine(Path.GetDirectoryName(uploadResult.LocalFilePath), saveFileName);
+                if (File.Exists(saveFilePath))
+                    File.Delete(saveFilePath);
 
-                    if (File.Exists(destFileName))
-                        File.Delete(destFileName);
+                File.Move(uploadResult.LocalFilePath, saveFilePath);
 
-                    File.Move(uploadResult.LocalFilePath, destFileName);
-                }
+                using (var sw = new StreamWriter(Path.ChangeExtension(saveFilePath, ".orig")))
+                    sw.WriteLine(uploadResult.FileName);
+
+
                 return Ok(new UploadResponse()
                 {
-                    TemporaryFile = UrlCombine(UploadFileService.TempFolder, Path.GetFileName(uploadResult.LocalFilePath))
+                    TemporaryFile = UrlCombine(UploadFileService.TempFolder, saveFileName)
                 });
             }
 

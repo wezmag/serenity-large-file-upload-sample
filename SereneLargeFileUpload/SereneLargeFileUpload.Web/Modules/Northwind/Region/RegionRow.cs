@@ -35,7 +35,7 @@ namespace SereneLargeFileUpload.Northwind.Entities
             set { Fields.FileUpload1[this] = value; }
         }
 
-        [LargeFileUploadEditor]
+        [LargeFileUploadEditor(FilenameFormat = "RegionUpload2/~")]
         public String FileUpload2
         {
             get { return Fields.FileUpload2[this]; }
