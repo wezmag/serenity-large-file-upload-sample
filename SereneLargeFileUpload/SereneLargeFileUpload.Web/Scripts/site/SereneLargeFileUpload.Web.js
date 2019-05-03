@@ -8038,7 +8038,7 @@ var SereneLargeFileUpload;
         };
         LargeFileUploadEditor.prototype.populate = function () {
             var _this = this;
-            Serenity.UploadHelper.populateFileSymbols(this.fileSymbols, this.entities, true, this.options.urlPrefix);
+            Serenity.UploadHelper.populateFileSymbols(this.fileSymbols, this.entities, true, undefined);
             this.fileSymbols.children().each(function (i, e) {
                 var x = i;
                 $("<a class='delete'></a>").appendTo($(e).children('.filename'))

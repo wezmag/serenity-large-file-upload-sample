@@ -3,7 +3,7 @@
     import Element = Serenity.Decorators.element;
 
     export interface LargeFileUploadEditorOptions {
-        urlPrefix?: string;
+        //urlPrefix?: string;
     }
 
     @Serenity.Decorators.registerEditor([Serenity.IReadOnly, Serenity.IGetEditValue, Serenity.ISetEditValue])
@@ -61,7 +61,7 @@
 
         protected populate(): void {
             Serenity.UploadHelper.populateFileSymbols(this.fileSymbols, this.entities,
-                true, this.options.urlPrefix);
+                true, undefined);
 
             this.fileSymbols.children().each((i, e) => {
                 var x = i;

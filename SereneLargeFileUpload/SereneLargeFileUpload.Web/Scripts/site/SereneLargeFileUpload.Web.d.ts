@@ -3345,7 +3345,6 @@ declare namespace SereneLargeFileUpload.Northwind {
 }
 declare namespace SereneLargeFileUpload {
     interface LargeFileUploadEditorOptions {
-        urlPrefix?: string;
     }
     class LargeFileUploadEditor extends Serenity.Widget<LargeFileUploadEditorOptions> {
         private entities;

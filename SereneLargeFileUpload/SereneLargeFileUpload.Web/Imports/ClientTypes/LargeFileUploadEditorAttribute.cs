@@ -15,12 +15,6 @@ namespace SereneLargeFileUpload
             : base(Key)
         {
         }
-
-        public String UrlPrefix
-        {
-            get { return GetOption<String>("urlPrefix"); }
-            set { SetOption("urlPrefix", value); }
-        }
     }
 }
 
