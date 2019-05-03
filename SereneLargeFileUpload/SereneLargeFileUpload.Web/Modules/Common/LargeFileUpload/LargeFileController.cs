@@ -21,10 +21,10 @@ namespace SereneLargeFileUpload.Common.LargeFileUpload
             if (string.IsNullOrWhiteSpace(token))
                 return InternalServerError(new Exception("File Token not provided."));
 
-            var uploadFileService = new UploadFileService();
 
             try
             {
+                var uploadFileService = new UploadFileService();
                 UploadProcessingResult uploadResult = await uploadFileService.HandleRequest(Request);
                 if (uploadResult.IsComplete)
                 {
@@ -68,8 +68,8 @@ namespace SereneLargeFileUpload.Common.LargeFileUpload
                                     var thumbFile = Path.Combine(Path.GetDirectoryName(uploadResult.LocalFilePath), baseFileName + "_t.jpg");
                                     thumbImage.Save(thumbFile, System.Drawing.Imaging.ImageFormat.Jpeg);
 
-                                    height = thumbImage.Width;
-                                    width = thumbImage.Height;
+                                    //height = thumbImage.Width;
+                                    //width = thumbImage.Height;
                                 }
                             }
                         }
@@ -79,6 +79,9 @@ namespace SereneLargeFileUpload.Common.LargeFileUpload
                     {
                         TemporaryFile = UrlCombine(UploadFileService.TempFolder, saveFileName),
                         IsImage = isImage,
+                        Width = width,
+                        Height = height,
+                        Size = size
                     });
                 }
 

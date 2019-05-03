@@ -16,7 +16,9 @@ namespace SereneLargeFileUpload
             AreaRegistration.RegisterAllAreas();
 
             FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
+
             WebApiConfig.Register(GlobalConfiguration.Configuration);
+
             RouteConfig.RegisterRoutes(RouteTable.Routes);
 
             ValueProviderFactories.Factories.Remove(
