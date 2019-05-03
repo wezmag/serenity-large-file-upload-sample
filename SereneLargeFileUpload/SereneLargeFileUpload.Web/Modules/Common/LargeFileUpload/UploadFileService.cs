@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
@@ -39,6 +40,9 @@ namespace SereneLargeFileUpload.Common.LargeFileUpload
             var uploadPath = Path.Combine(_uploadSettings.Path, TempFolder);
             if (!Directory.Exists(uploadPath))
                 Directory.CreateDirectory(uploadPath);
+
+            if (IsDangerousExtension(Path.GetExtension(OriginalFileName)))
+                throw new Exception("Unsupported file extension!");
 
             if (request.IsChunkUpload())
             {
@@ -96,6 +100,29 @@ namespace SereneLargeFileUpload.Common.LargeFileUpload
 
         }
 
+        private bool IsDangerousExtension(string extension)
+        {
+            return extension.EndsWith(".exe") ||
+                extension.EndsWith(".bat") ||
+                extension.EndsWith(".cmd") ||
+                extension.EndsWith(".dll") ||
+                extension.EndsWith(".jar") ||
+                extension.EndsWith(".jsp") ||
+                extension.EndsWith(".htaccess") ||
+                extension.EndsWith(".htpasswd") ||
+                extension.EndsWith(".lnk") ||
+                extension.EndsWith(".vbs") ||
+                extension.EndsWith(".vbe") ||
+                extension.EndsWith(".aspx") ||
+                extension.EndsWith(".ascx") ||
+                extension.EndsWith(".config") ||
+                extension.EndsWith(".com") ||
+                extension.EndsWith(".asmx") ||
+                extension.EndsWith(".asax") ||
+                extension.EndsWith(".compiled") ||
+                extension.EndsWith(".php");
+        }
+
         private string GetSafeFileName(string fileName) {
             return new string(fileName.Select(ch => Path.GetInvalidFileNameChars().Contains(ch) ? '_' : ch).ToArray());
         }
@@ -124,5 +151,7 @@ namespace SereneLargeFileUpload.Common.LargeFileUpload
                 return "temporary";
             }
         }
+
+
     }
 }

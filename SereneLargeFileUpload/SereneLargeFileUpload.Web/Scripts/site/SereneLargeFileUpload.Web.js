@@ -8165,6 +8165,9 @@ var Serenity;
                 submit: function (e, data) {
                     var file = data.files[0];
                     data.headers = $.extend(data.headers, { 'X-File-Token': Q.Authorization.username });
+                },
+                fail: function (e, data) {
+                    Q.alert(data.jqXHR.responseJSON.Message);
                 }
             });
             return uploadInput;

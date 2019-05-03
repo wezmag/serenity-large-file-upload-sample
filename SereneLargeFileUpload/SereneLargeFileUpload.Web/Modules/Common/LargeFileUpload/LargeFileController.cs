@@ -1,10 +1,12 @@
 ﻿using System;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using System.Web.Http;
 using Serenity.Services;
+using Serenity.Web;
 
 namespace SereneLargeFileUpload.Common.LargeFileUpload
 {
@@ -21,39 +23,83 @@ namespace SereneLargeFileUpload.Common.LargeFileUpload
 
             var uploadFileService = new UploadFileService();
 
-            UploadProcessingResult uploadResult = await uploadFileService.HandleRequest(Request);
-
-            if (uploadResult.IsComplete)
+            try
             {
-                var uniqueId = Guid.NewGuid().ToString("N");
-                var saveFileName = $"{uniqueId}{Path.GetExtension(uploadResult.FileName)}";
-                var saveFilePath = Path.Combine(Path.GetDirectoryName(uploadResult.LocalFilePath), saveFileName);
-                if (File.Exists(saveFilePath))
-                    File.Delete(saveFilePath);
-
-                File.Move(uploadResult.LocalFilePath, saveFilePath);
-
-                using (var sw = new StreamWriter(Path.ChangeExtension(saveFilePath, ".orig")))
-                    sw.WriteLine(uploadResult.FileName);
-
-
-                return Ok(new UploadResponse()
+                UploadProcessingResult uploadResult = await uploadFileService.HandleRequest(Request);
+                if (uploadResult.IsComplete)
                 {
-                    TemporaryFile = UrlCombine(UploadFileService.TempFolder, saveFileName)
-                });
+                    var baseFileName = Guid.NewGuid().ToString("N");
+                    var saveFileName = $"{baseFileName}{Path.GetExtension(uploadResult.FileName)}";
+                    var saveFilePath = Path.Combine(Path.GetDirectoryName(uploadResult.LocalFilePath), saveFileName);
+                    if (File.Exists(saveFilePath))
+                        File.Delete(saveFilePath);
+
+                    File.Move(uploadResult.LocalFilePath, saveFilePath);
+
+                    using (var sw = new StreamWriter(Path.ChangeExtension(saveFilePath, ".orig")))
+                        sw.WriteLine(uploadResult.FileName);
+
+                    //create thumb for image
+                    var isImage = false;
+                    var height = 0;
+                    var width = 0;
+                    long size = 0;
+                    if (IsImageExtension(saveFileName))
+                    {
+                        isImage = true;
+
+                        using (var fileContent = new FileStream(saveFilePath, FileMode.Open))
+                        {
+                            var imageChecker = new ImageChecker();
+                            var checkResult = imageChecker.CheckStream(fileContent, true, out var image);
+                            height = imageChecker.Height;
+                            width = imageChecker.Width;
+                            size = imageChecker.DataSize;
+                            if (checkResult != ImageCheckResult.JPEGImage &&
+                                checkResult != ImageCheckResult.GIFImage &&
+                                checkResult != ImageCheckResult.PNGImage)
+                            {
+                                throw new Exception(imageChecker.FormatErrorMessage(checkResult));
+                            }
+                            else
+                            {
+                                using (var thumbImage = ThumbnailGenerator.Generate(image, 128, 96, ImageScaleMode.CropSourceImage, Color.Empty))
+                                {
+                                    var thumbFile = Path.Combine(Path.GetDirectoryName(uploadResult.LocalFilePath), baseFileName + "_t.jpg");
+                                    thumbImage.Save(thumbFile, System.Drawing.Imaging.ImageFormat.Jpeg);
+
+                                    height = thumbImage.Width;
+                                    width = thumbImage.Height;
+                                }
+                            }
+                        }
+                    }
+
+                    return Ok(new UploadResponse()
+                    {
+                        TemporaryFile = UrlCombine(UploadFileService.TempFolder, saveFileName),
+                        IsImage = isImage,
+                    });
+                }
+
+                return Ok(HttpStatusCode.Continue);
             }
-
-            return Ok(HttpStatusCode.Continue);
-
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         private class UploadResponse : ServiceResponse
         {
             public string TemporaryFile { get; set; }
-            public Int64 Size { get; set; }
+            public long Size { get; set; }
+            public bool IsImage { get; set; }
+            public int Width { get; set; }
+            public int Height { get; set; }
         }
 
-        public string UrlCombine(string url1, string url2)
+        private string UrlCombine(string url1, string url2)
         {
             if (url1.Length == 0)
             {
@@ -69,6 +115,13 @@ namespace SereneLargeFileUpload.Common.LargeFileUpload
             url2 = url2.TrimStart('/', '\\');
 
             return string.Format("{0}/{1}", url1, url2);
+        }
+        private bool IsImageExtension(string extension)
+        {
+            return extension.EndsWith(".jpg", StringComparison.InvariantCultureIgnoreCase) ||
+                extension.EndsWith(".jpeg", StringComparison.InvariantCultureIgnoreCase) ||
+                extension.EndsWith(".png", StringComparison.InvariantCultureIgnoreCase) ||
+                extension.EndsWith(".gif", StringComparison.InvariantCultureIgnoreCase);
         }
     }
 }

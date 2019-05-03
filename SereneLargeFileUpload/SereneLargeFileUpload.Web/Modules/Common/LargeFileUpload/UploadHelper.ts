@@ -45,6 +45,9 @@
                 submit: (e: JQueryEventObject, data: any) => {
                     var file = data.files[0];
                     data.headers = $.extend(data.headers, { 'X-File-Token': Q.Authorization.username });
+                },
+                fail: (e: JQueryEventObject, data: any) => {
+                    Q.alert(data.jqXHR.responseJSON.Message);
                 }
             });
 
