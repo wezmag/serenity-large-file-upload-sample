@@ -3057,35 +3057,6 @@ declare namespace SereneLargeFileUpload {
         hideLabel: boolean;
     }
 }
-declare namespace SereneLargeFileUpload {
-    interface LargeFileUploadEditorOptions {
-        urlPrefix?: string;
-    }
-    class LargeFileUploadEditor extends Serenity.Widget<LargeFileUploadEditorOptions> {
-        private entities;
-        private toolbar;
-        private fileSymbols;
-        private uploadInput;
-        constructor(div: JQuery, opt: LargeFileUploadEditorOptions);
-        protected addFileButtonText(): string;
-        protected getToolButtons(): Serenity.ToolButton[];
-        protected populate(): void;
-        protected updateInterface(): void;
-        get_readOnly(): boolean;
-        set_readOnly(value: boolean): void;
-        get_value(): Serenity.UploadedFile[];
-        value: Serenity.UploadedFile[];
-        set_value(value: Serenity.UploadedFile[]): void;
-        getEditValue(property: Serenity.PropertyItem, target: any): void;
-        setEditValue(source: any, property: Serenity.PropertyItem): void;
-        jsonEncodeValue: boolean;
-    }
-}
-declare namespace Serenity {
-    namespace UploadHelper {
-        function addLargeFileUploadInput(options: UploadInputOptions): JQuery;
-    }
-}
 declare namespace SereneLargeFileUpload.Common {
     class LanguageSelection extends Serenity.Widget<any> {
         constructor(select: JQuery, currentLanguage: string);
@@ -3370,5 +3341,33 @@ declare namespace SereneLargeFileUpload.Northwind {
         protected getLocalTextPrefix(): string;
         protected getService(): string;
         constructor(container: JQuery);
+    }
+}
+declare namespace SereneLargeFileUpload {
+    interface LargeFileUploadEditorOptions {
+        urlPrefix?: string;
+    }
+    class LargeFileUploadEditor extends Serenity.Widget<LargeFileUploadEditorOptions> {
+        private entities;
+        private toolbar;
+        private fileSymbols;
+        private uploadInput;
+        constructor(div: JQuery, opt: LargeFileUploadEditorOptions);
+        protected addFileButtonText(): string;
+        protected getToolButtons(): Serenity.ToolButton[];
+        protected populate(): void;
+        protected updateInterface(): void;
+        get_readOnly(): boolean;
+        set_readOnly(value: boolean): void;
+        get_value(): Serenity.UploadedFile[];
+        value: Serenity.UploadedFile[];
+        set_value(value: Serenity.UploadedFile[]): void;
+        getEditValue(property: Serenity.PropertyItem, target: any): void;
+        setEditValue(source: any, property: Serenity.PropertyItem): void;
+    }
+}
+declare namespace Serenity {
+    namespace UploadHelper {
+        function addLargeFileUploadInput(options: UploadInputOptions): JQuery;
     }
 }

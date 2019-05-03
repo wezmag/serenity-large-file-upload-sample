@@ -10,7 +10,7 @@ namespace SereneLargeFileUpload.Common.LargeFileUpload
     {
         public string ChunkToken { get; set; }
 
-        public string ChuckFileName { get; set; }
+        //public string ChuckFileName { get; set; }
 
         public long? ChunkStart { get; set; }
 

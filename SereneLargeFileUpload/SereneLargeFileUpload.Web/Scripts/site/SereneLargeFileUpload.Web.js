@@ -6578,195 +6578,6 @@ var SereneLargeFileUpload;
 })(SereneLargeFileUpload || (SereneLargeFileUpload = {}));
 var SereneLargeFileUpload;
 (function (SereneLargeFileUpload) {
-    var Element = Serenity.Decorators.element;
-    var Option = Serenity.Decorators.option;
-    var LargeFileUploadEditor = /** @class */ (function (_super) {
-        __extends(LargeFileUploadEditor, _super);
-        function LargeFileUploadEditor(div, opt) {
-            var _this = _super.call(this, div, opt) || this;
-            _this.entities = [];
-            div.addClass('s-MultipleImageUploadEditor');
-            var self = _this;
-            _this.toolbar = new Serenity.Toolbar($('<div/>').appendTo(_this.element), {
-                buttons: _this.getToolButtons()
-            });
-            var progress = $('<div><div></div></div>')
-                .addClass('upload-progress').prependTo(_this.toolbar.element);
-            var addFileButton = _this.toolbar.findButton('add-file-button');
-            _this.uploadInput = Serenity.UploadHelper.addLargeFileUploadInput({
-                container: addFileButton,
-                zone: _this.element,
-                inputName: _this.uniqueName,
-                progress: progress,
-                fileDone: function (response, name, data) {
-                    var newEntity = { OriginalName: name, Filename: response.TemporaryFile };
-                    self.entities.push(newEntity);
-                    self.populate();
-                    self.updateInterface();
-                }
-            });
-            _this.fileSymbols = $('<ul/>').appendTo(_this.element);
-            _this.updateInterface();
-            return _this;
-        }
-        LargeFileUploadEditor.prototype.addFileButtonText = function () {
-            return Q.text('Controls.ImageUpload.AddFileButton');
-        };
-        LargeFileUploadEditor.prototype.getToolButtons = function () {
-            return [{
-                    title: this.addFileButtonText(),
-                    cssClass: 'add-file-button',
-                    onClick: function () {
-                    }
-                }];
-        };
-        LargeFileUploadEditor.prototype.populate = function () {
-            var _this = this;
-            Serenity.UploadHelper.populateFileSymbols(this.fileSymbols, this.entities, true, this.options.urlPrefix);
-            this.fileSymbols.children().each(function (i, e) {
-                var x = i;
-                $("<a class='delete'></a>").appendTo($(e).children('.filename'))
-                    .click(function (ev) {
-                    ev.preventDefault();
-                    ss.removeAt(_this.entities, x);
-                    _this.populate();
-                });
-            });
-        };
-        LargeFileUploadEditor.prototype.updateInterface = function () {
-            var addButton = this.toolbar.findButton('add-file-button');
-            addButton.toggleClass('disabled', this.get_readOnly());
-            this.fileSymbols.find('a.delete').toggle(!this.get_readOnly());
-            console.log(this.entities);
-        };
-        LargeFileUploadEditor.prototype.get_readOnly = function () {
-            return this.uploadInput.attr('disabled') != null;
-        };
-        LargeFileUploadEditor.prototype.set_readOnly = function (value) {
-            if (this.get_readOnly() !== value) {
-                if (value) {
-                    this.uploadInput.attr('disabled', 'disabled').fileupload('disable');
-                }
-                else {
-                    this.uploadInput.removeAttr('disabled').fileupload('enable');
-                }
-                this.updateInterface();
-            }
-        };
-        LargeFileUploadEditor.prototype.get_value = function () {
-            return this.entities.map(function (x) {
-                return $.extend({}, x);
-            });
-        };
-        Object.defineProperty(LargeFileUploadEditor.prototype, "value", {
-            get: function () {
-                return this.get_value();
-            },
-            set: function (v) {
-                this.set_value(v);
-            },
-            enumerable: true,
-            configurable: true
-        });
-        LargeFileUploadEditor.prototype.set_value = function (value) {
-            this.entities = (value || []).map(function (x) {
-                return $.extend({}, x);
-            });
-            this.populate();
-            this.updateInterface();
-        };
-        LargeFileUploadEditor.prototype.getEditValue = function (property, target) {
-            if (this.jsonEncodeValue) {
-                target[property.name] = $.toJSON(this.get_value());
-            }
-            else {
-                target[property.name] = this.get_value();
-            }
-        };
-        LargeFileUploadEditor.prototype.setEditValue = function (source, property) {
-            var val = source[property.name];
-            if (ss.isInstanceOfType(val, String)) {
-                var json = Q.coalesce(Q.trimToNull(val), '[]');
-                if (Q.startsWith(json, '[') && Q.endsWith(json, ']')) {
-                    this.set_value($.parseJSON(json));
-                }
-                else {
-                    this.set_value([{
-                            Filename: json,
-                            OriginalName: 'UnknownFile'
-                        }]);
-                }
-            }
-            else {
-                this.set_value(val);
-            }
-        };
-        __decorate([
-            Option()
-        ], LargeFileUploadEditor.prototype, "jsonEncodeValue", void 0);
-        LargeFileUploadEditor = __decorate([
-            Serenity.Decorators.registerEditor([Serenity.IReadOnly, Serenity.IGetEditValue, Serenity.ISetEditValue]),
-            Element('<div/>')
-        ], LargeFileUploadEditor);
-        return LargeFileUploadEditor;
-    }(Serenity.Widget));
-    SereneLargeFileUpload.LargeFileUploadEditor = LargeFileUploadEditor;
-})(SereneLargeFileUpload || (SereneLargeFileUpload = {}));
-var Serenity;
-(function (Serenity) {
-    var UploadHelper;
-    (function (UploadHelper) {
-        function addLargeFileUploadInput(options) {
-            options.container.addClass('fileinput-button');
-            var uploadInput = $('<input/>').attr('type', 'file')
-                .attr('name', options.inputName + '[]')
-                .attr('data-url', Q.resolveUrl('~/api/fileupload/'))
-                .attr('multiple', 'multiple')
-                .appendTo(options.container);
-            if (options.allowMultiple) {
-                uploadInput.attr('multiple', 'multiple');
-            }
-            uploadInput.fileupload({
-                multipart: true,
-                maxChunkSize: 4000000,
-                dropZone: options.zone,
-                pasteZone: options.zone,
-                done: function (e, data) {
-                    var response = data.result;
-                    if (options.fileDone != null) {
-                        options.fileDone(response, data.files[0].name, data);
-                    }
-                },
-                start: function () {
-                    Q.blockUI(null);
-                    if (options.progress != null) {
-                        options.progress.show();
-                    }
-                },
-                stop: function () {
-                    Q.blockUndo();
-                    if (options.progress != null) {
-                        options.progress.hide();
-                    }
-                },
-                progressall: function (e1, data1) {
-                    if (options.progress != null) {
-                        var percent = data1.loaded / data1.total * 100;
-                        options.progress.children().css('width', percent.toString() + '%');
-                    }
-                },
-                submit: function (e, data) {
-                    var file = data.files[0];
-                    data.headers = $.extend(data.headers, { 'X-File-Token': Q.Authorization.username, 'X-File-Name': file.name });
-                }
-            });
-            return uploadInput;
-        }
-        UploadHelper.addLargeFileUploadInput = addLargeFileUploadInput;
-    })(UploadHelper = Serenity.UploadHelper || (Serenity.UploadHelper = {}));
-})(Serenity || (Serenity = {}));
-var SereneLargeFileUpload;
-(function (SereneLargeFileUpload) {
     var Common;
     (function (Common) {
         var LanguageSelection = /** @class */ (function (_super) {
@@ -8182,4 +7993,183 @@ var SereneLargeFileUpload;
         Northwind.TerritoryGrid = TerritoryGrid;
     })(Northwind = SereneLargeFileUpload.Northwind || (SereneLargeFileUpload.Northwind = {}));
 })(SereneLargeFileUpload || (SereneLargeFileUpload = {}));
+var SereneLargeFileUpload;
+(function (SereneLargeFileUpload) {
+    var Element = Serenity.Decorators.element;
+    var LargeFileUploadEditor = /** @class */ (function (_super) {
+        __extends(LargeFileUploadEditor, _super);
+        function LargeFileUploadEditor(div, opt) {
+            var _this = _super.call(this, div, opt) || this;
+            _this.entities = [];
+            div.addClass('s-MultipleImageUploadEditor');
+            var self = _this;
+            _this.toolbar = new Serenity.Toolbar($('<div/>').appendTo(_this.element), {
+                buttons: _this.getToolButtons()
+            });
+            var progress = $('<div><div></div></div>')
+                .addClass('upload-progress').prependTo(_this.toolbar.element);
+            var addFileButton = _this.toolbar.findButton('add-file-button');
+            _this.uploadInput = Serenity.UploadHelper.addLargeFileUploadInput({
+                container: addFileButton,
+                zone: _this.element,
+                inputName: _this.uniqueName,
+                progress: progress,
+                fileDone: function (response, name, data) {
+                    var newEntity = { OriginalName: name, Filename: response.TemporaryFile };
+                    self.entities.push(newEntity);
+                    self.populate();
+                    self.updateInterface();
+                }
+            });
+            _this.fileSymbols = $('<ul/>').appendTo(_this.element);
+            _this.updateInterface();
+            return _this;
+        }
+        LargeFileUploadEditor.prototype.addFileButtonText = function () {
+            return Q.text('Controls.ImageUpload.AddFileButton');
+        };
+        LargeFileUploadEditor.prototype.getToolButtons = function () {
+            return [{
+                    title: this.addFileButtonText(),
+                    cssClass: 'add-file-button',
+                    onClick: function () {
+                    }
+                }];
+        };
+        LargeFileUploadEditor.prototype.populate = function () {
+            var _this = this;
+            Serenity.UploadHelper.populateFileSymbols(this.fileSymbols, this.entities, true, this.options.urlPrefix);
+            this.fileSymbols.children().each(function (i, e) {
+                var x = i;
+                $("<a class='delete'></a>").appendTo($(e).children('.filename'))
+                    .click(function (ev) {
+                    ev.preventDefault();
+                    ss.removeAt(_this.entities, x);
+                    _this.populate();
+                });
+            });
+        };
+        LargeFileUploadEditor.prototype.updateInterface = function () {
+            var addButton = this.toolbar.findButton('add-file-button');
+            addButton.toggleClass('disabled', this.get_readOnly());
+            this.fileSymbols.find('a.delete').toggle(!this.get_readOnly());
+        };
+        LargeFileUploadEditor.prototype.get_readOnly = function () {
+            return this.uploadInput.attr('disabled') != null;
+        };
+        LargeFileUploadEditor.prototype.set_readOnly = function (value) {
+            if (this.get_readOnly() !== value) {
+                if (value) {
+                    this.uploadInput.attr('disabled', 'disabled').fileupload('disable');
+                }
+                else {
+                    this.uploadInput.removeAttr('disabled').fileupload('enable');
+                }
+                this.updateInterface();
+            }
+        };
+        LargeFileUploadEditor.prototype.get_value = function () {
+            return this.entities.map(function (x) {
+                return $.extend({}, x);
+            });
+        };
+        Object.defineProperty(LargeFileUploadEditor.prototype, "value", {
+            get: function () {
+                return this.get_value();
+            },
+            set: function (v) {
+                this.set_value(v);
+            },
+            enumerable: true,
+            configurable: true
+        });
+        LargeFileUploadEditor.prototype.set_value = function (value) {
+            this.entities = (value || []).map(function (x) {
+                return $.extend({}, x);
+            });
+            this.populate();
+            this.updateInterface();
+        };
+        LargeFileUploadEditor.prototype.getEditValue = function (property, target) {
+            target[property.name] = $.toJSON(this.get_value());
+        };
+        LargeFileUploadEditor.prototype.setEditValue = function (source, property) {
+            var val = source[property.name];
+            if (ss.isInstanceOfType(val, String)) {
+                var json = Q.coalesce(Q.trimToNull(val), '[]');
+                if (Q.startsWith(json, '[') && Q.endsWith(json, ']')) {
+                    this.set_value($.parseJSON(json));
+                }
+                else {
+                    this.set_value([{
+                            Filename: json,
+                            OriginalName: 'UnknownFile'
+                        }]);
+                }
+            }
+            else {
+                this.set_value(val);
+            }
+        };
+        LargeFileUploadEditor = __decorate([
+            Serenity.Decorators.registerEditor([Serenity.IReadOnly, Serenity.IGetEditValue, Serenity.ISetEditValue]),
+            Element('<div/>')
+        ], LargeFileUploadEditor);
+        return LargeFileUploadEditor;
+    }(Serenity.Widget));
+    SereneLargeFileUpload.LargeFileUploadEditor = LargeFileUploadEditor;
+})(SereneLargeFileUpload || (SereneLargeFileUpload = {}));
+var Serenity;
+(function (Serenity) {
+    var UploadHelper;
+    (function (UploadHelper) {
+        function addLargeFileUploadInput(options) {
+            options.container.addClass('fileinput-button');
+            var uploadInput = $('<input/>').attr('type', 'file')
+                .attr('name', options.inputName + '[]')
+                .attr('data-url', Q.resolveUrl('~/api/fileupload/'))
+                .attr('multiple', 'multiple')
+                .appendTo(options.container);
+            if (options.allowMultiple) {
+                uploadInput.attr('multiple', 'multiple');
+            }
+            uploadInput.fileupload({
+                multipart: true,
+                maxChunkSize: 4000000,
+                dropZone: options.zone,
+                pasteZone: options.zone,
+                done: function (e, data) {
+                    var response = data.result;
+                    if (options.fileDone != null) {
+                        options.fileDone(response, data.files[0].name, data);
+                    }
+                },
+                start: function () {
+                    Q.blockUI(null);
+                    if (options.progress != null) {
+                        options.progress.show();
+                    }
+                },
+                stop: function () {
+                    Q.blockUndo();
+                    if (options.progress != null) {
+                        options.progress.hide();
+                    }
+                },
+                progressall: function (e1, data1) {
+                    if (options.progress != null) {
+                        var percent = data1.loaded / data1.total * 100;
+                        options.progress.children().css('width', percent.toString() + '%');
+                    }
+                },
+                submit: function (e, data) {
+                    var file = data.files[0];
+                    data.headers = $.extend(data.headers, { 'X-File-Token': Q.Authorization.username });
+                }
+            });
+            return uploadInput;
+        }
+        UploadHelper.addLargeFileUploadInput = addLargeFileUploadInput;
+    })(UploadHelper = Serenity.UploadHelper || (Serenity.UploadHelper = {}));
+})(Serenity || (Serenity = {}));
 //# sourceMappingURL=SereneLargeFileUpload.Web.js.map

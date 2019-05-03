@@ -44,7 +44,7 @@
                 },
                 submit: (e: JQueryEventObject, data: any) => {
                     var file = data.files[0];
-                    data.headers = $.extend(data.headers, { 'X-File-Token': Q.Authorization.username, 'X-File-Name': file.name });
+                    data.headers = $.extend(data.headers, { 'X-File-Token': Q.Authorization.username });
                 }
             });
 

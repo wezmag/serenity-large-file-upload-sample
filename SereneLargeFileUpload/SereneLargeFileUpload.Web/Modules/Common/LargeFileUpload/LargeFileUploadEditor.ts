@@ -1,7 +1,6 @@
 ﻿namespace SereneLargeFileUpload {
 
     import Element = Serenity.Decorators.element;
-    import Option = Serenity.Decorators.option;
 
     export interface LargeFileUploadEditorOptions {
         urlPrefix?: string;
@@ -79,7 +78,6 @@
             var addButton = this.toolbar.findButton('add-file-button');
             addButton.toggleClass('disabled', this.get_readOnly());
             this.fileSymbols.find('a.delete').toggle(!this.get_readOnly());
-            console.log(this.entities);
         }
 
         get_readOnly(): boolean {
@@ -121,12 +119,7 @@
         }
 
         getEditValue(property: Serenity.PropertyItem, target: any) {
-            if (this.jsonEncodeValue) {
-                target[property.name] = $.toJSON(this.get_value());
-            }
-            else {
-                target[property.name] = this.get_value();
-            }
+            target[property.name] = $.toJSON(this.get_value());
         }
 
         setEditValue(source: any, property: Serenity.PropertyItem) {
@@ -147,8 +140,5 @@
                 this.set_value(val as any);
             }
         }
-
-        @Option()
-        public jsonEncodeValue: boolean;
     }
 }

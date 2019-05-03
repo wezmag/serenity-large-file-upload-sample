@@ -5,6 +5,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
+using System.Web.Hosting;
 using Serenity;
 using Serenity.Web;
 
@@ -12,29 +13,26 @@ namespace SereneLargeFileUpload.Common.LargeFileUpload
 {
     public class UploadFileService
     {
-        private readonly string _uploadPath;
         private readonly MultipartFormDataStreamProvider _streamProvider;
+        private readonly UploadSettings _uploadSettings;
 
         public UploadFileService()
         {
-            _uploadPath = UserLocalPath;
-            if (!Directory.Exists(_uploadPath))
-                Directory.CreateDirectory(_uploadPath);
+            _uploadSettings = Config.Get<UploadSettings>();
+            if (_uploadSettings.Path.StartsWith("~"))
+                _uploadSettings.Path = HostingEnvironment.MapPath(_uploadSettings.Path);
 
-            _streamProvider = new MultipartFormDataStreamProvider(_uploadPath);
+            if (!Directory.Exists(_uploadSettings.Path))
+                Directory.CreateDirectory(_uploadSettings.Path);
+
+            _streamProvider = new MultipartFormDataStreamProvider(_uploadSettings.Path);
         }
-
-        #region Interface
 
         public async Task<UploadProcessingResult> HandleRequest(HttpRequestMessage request)
         {
             await request.Content.ReadAsMultipartAsync(_streamProvider);
             return await ProcessFile(request);
         }
-
-        #endregion    
-
-        #region Private implementation
 
         private async Task<UploadProcessingResult> ProcessFile(HttpRequestMessage request)
         {
@@ -44,23 +42,24 @@ namespace SereneLargeFileUpload.Common.LargeFileUpload
             }
 
             //將檔案搬到對應的資料夾
-            var token = request.Headers.Contains("X-File-Token") ? request.Headers.GetValues("X-File-Token").FirstOrDefault() : null;
-            var fileName = request.Headers.Contains("X-File-Name") ? request.Headers.GetValues("X-File-Name").FirstOrDefault() : null;
-            var uploadPath = Path.Combine(_uploadPath, token);
+            var xtoken = request.Headers.Contains("X-File-Token") ? request.Headers.GetValues("X-File-Token").FirstOrDefault() : null;
+            var savedFileName = GetSafeFileName($"{xtoken}_{OriginalFileName}");
+
+            var uploadPath = Path.Combine(_uploadSettings.Path, "temporary");
             if (!Directory.Exists(uploadPath))
                 Directory.CreateDirectory(uploadPath);
-            string filePath = Path.Combine(uploadPath, $"{fileName}{TempFileExtension}");
+            string savedFilePath = Path.Combine(uploadPath, savedFileName);
 
-            if (File.Exists(filePath))
-                File.Delete(filePath);
+            if (File.Exists(savedFilePath))
+                File.Delete(savedFilePath);
 
-            File.Move(LocalFileName, filePath);
+            File.Move(LocalFileName, savedFilePath);
 
             return new UploadProcessingResult()
             {
                 IsComplete = true,
                 FileName = OriginalFileName,
-                LocalFilePath = filePath,
+                LocalFilePath = savedFilePath,
                 FileMetadata = _streamProvider.FormData
             };
         }
@@ -69,14 +68,16 @@ namespace SereneLargeFileUpload.Common.LargeFileUpload
         {
             //use the unique identifier sent from client to identify the file
             FileChunkMetaData chunkMetaData = request.GetChunkMetaData();
-            string uploadPath = Path.Combine(_uploadPath, chunkMetaData.ChunkToken);
+            var savedFileName = GetSafeFileName($"{chunkMetaData.ChunkToken}_{OriginalFileName}");
+
+            string uploadPath = Path.Combine(_uploadSettings.Path, TempFolder);
             if (!Directory.Exists(uploadPath))
                 Directory.CreateDirectory(uploadPath);
 
-            string filePath = Path.Combine(uploadPath, $"{chunkMetaData.ChuckFileName}{TempFileExtension}");
+            string savedFilePath = Path.Combine(uploadPath, savedFileName);
 
             //append chunks to construct original file
-            using (FileStream fileStream = new FileStream(filePath, FileMode.OpenOrCreate | FileMode.Append))
+            using (FileStream fileStream = new FileStream(savedFilePath, FileMode.OpenOrCreate | FileMode.Append))
             {
                 var localFileInfo = new FileInfo(LocalFileName);
                 var localFileStream = localFileInfo.OpenRead();
@@ -95,15 +96,15 @@ namespace SereneLargeFileUpload.Common.LargeFileUpload
             {
                 IsComplete = chunkMetaData.IsLastChunk,
                 FileName = OriginalFileName,
-                LocalFilePath = chunkMetaData.IsLastChunk ? filePath : null,
+                LocalFilePath = chunkMetaData.IsLastChunk ? savedFilePath : null,
                 FileMetadata = _streamProvider.FormData
             };
 
         }
 
-        #endregion    
-
-        #region Properties
+        private string GetSafeFileName(string fileName) {
+            return new string(fileName.Select(ch => Path.GetInvalidFileNameChars().Contains(ch) ? '_' : ch).ToArray());
+        }
 
         private string LocalFileName
         {
@@ -123,15 +124,6 @@ namespace SereneLargeFileUpload.Common.LargeFileUpload
             }
         }
 
-        public static string UserLocalPath
-        {
-            get
-            {
-                var settings = Config.Get<UploadSettings>();
-                return settings.Path;
-            }
-        }
-
         public static string TempFileExtension
         {
             get
@@ -140,6 +132,11 @@ namespace SereneLargeFileUpload.Common.LargeFileUpload
             }
         }
 
-        #endregion    
+        public static string TempFolder
+        {
+            get {
+                return "temporary";
+            }
+        }
     }
 }

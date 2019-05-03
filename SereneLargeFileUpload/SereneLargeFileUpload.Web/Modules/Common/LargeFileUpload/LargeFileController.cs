@@ -37,8 +37,7 @@ namespace SereneLargeFileUpload.Common.LargeFileUpload
                 }
                 return Ok(new UploadResponse()
                 {
-                    TemporaryFile = uploadResult.LocalFilePath,
-
+                    TemporaryFile = UrlCombine(UploadFileService.TempFolder, Path.GetFileName(uploadResult.LocalFilePath))
                 });
             }
 
@@ -49,6 +48,25 @@ namespace SereneLargeFileUpload.Common.LargeFileUpload
         private class UploadResponse : ServiceResponse
         {
             public string TemporaryFile { get; set; }
+            public Int64 Size { get; set; }
+        }
+
+        public string UrlCombine(string url1, string url2)
+        {
+            if (url1.Length == 0)
+            {
+                return url2;
+            }
+
+            if (url2.Length == 0)
+            {
+                return url1;
+            }
+
+            url1 = url1.TrimEnd('/', '\\');
+            url2 = url2.TrimStart('/', '\\');
+
+            return string.Format("{0}/{1}", url1, url2);
         }
     }
 }
